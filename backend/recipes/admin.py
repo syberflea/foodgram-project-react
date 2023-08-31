@@ -1,14 +1,14 @@
 from django.contrib import admin
 from users.models import User
 
-from .models import Ingredient, Recipe, Tag, IngredientInRecipe
+from .models import (
+    Favorite, Ingredient, IngredientInRecipe, Recipe, ShopingCart, Tag,
+)
 
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'tags',
         'author',
-        'ingredients',
         'is_favorited',
         'is_in_shopping_cart',
         'name',
@@ -37,7 +37,15 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class IngredientInRecipeAdmin(admin.ModelAdmin):
-    '''Админка для связуещего класса IngredientInRecipeAdmin'''
+    pass
+
+
+class FavoriteRecipeAdmin(admin.ModelAdmin):
+    pass
+
+
+class ShopingCartAdmin(admin.ModelAdmin):
+    pass
 
 
 admin.site.register(User)
@@ -45,3 +53,5 @@ admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(IngredientInRecipe, IngredientInRecipeAdmin)
+admin.site.register(Favorite, FavoriteRecipeAdmin)
+admin.site.register(ShopingCart, ShopingCartAdmin)

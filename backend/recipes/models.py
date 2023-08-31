@@ -113,24 +113,16 @@ class Recipe(models.Model):
 
 class IngredientInRecipe(models.Model):
     '''Модель для связи рецептов с ингредиентами.'''
-    name = models.CharField(
-        'Название',
-        max_length=200
-    )
-    measurement_unit = models.CharField(
-        '''Единица измерения''',
-        max_length=200
-    )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='ingredients',
+        related_name='elements',
         verbose_name='Рецепт'
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredients',
+        related_name='elements',
         verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
@@ -179,7 +171,7 @@ class Favorite(models.Model):
         ]
 
 
-class ShoppingCart(models.Model):
+class ShopingCart(models.Model):
     '''Список покупок'''
     user = models.ForeignKey(
         User,
