@@ -45,8 +45,8 @@ class Ingredient(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Ингридиент'
-        verbose_name_plural = 'Ингридиенты'
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
         return self.name
@@ -95,6 +95,7 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления (в минутах)',
+        default=1,
         validators=[
             MinValueValidator(
                 1,
@@ -136,7 +137,12 @@ class IngredientInRecipe(models.Model):
         ]
     )
 
+    def __str__(self):
+        return f"{self.recipe.name} {self.ingredient.name} {self.amount}"
+
     class Meta:
+        verbose_name = 'Ингредиенты и Рецепты'
+        verbose_name_plural = 'Ингредиенты и Рецепты'
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'ingredient'],
@@ -161,14 +167,17 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Избранный рецепт'
-        verbose_name_plural = 'Избранные рецепты'
+        verbose_name = 'Рецепт избранный'
+        verbose_name_plural = 'Рецепты избранные'
         constraints = [
             UniqueConstraint(
                 fields=['user', 'recipe'],
                 name="unique_favorite"
             )
         ]
+
+        def __str__(self):
+            return f"{self.user.name} likes {self.recipe.name}"
 
 
 class ShopingCart(models.Model):
@@ -195,3 +204,6 @@ class ShopingCart(models.Model):
                 name="unique_shopingcart"
             )
         ]
+
+    def __str__(self):
+        return f"{self.user.name} buys {self.recipe.name}"

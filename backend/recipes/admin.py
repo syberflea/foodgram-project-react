@@ -1,5 +1,4 @@
 from django.contrib import admin
-from users.models import User
 
 from .models import (
     Favorite, Ingredient, IngredientInRecipe, Recipe, ShopingCart, Tag,
@@ -8,6 +7,7 @@ from .models import (
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
         'author',
         'is_favorited',
         'is_in_shopping_cart',
@@ -48,7 +48,6 @@ class ShopingCartAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(User)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag, TagAdmin)

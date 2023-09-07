@@ -9,7 +9,7 @@ class User(AbstractUser):
     '''Пользователь (В рецепте - автор рецепта)'''
     username_validator = UsernameRegexValidator()
     username = models.CharField(
-        'Уникальный юзернейм',
+        'Имя пользователя',
         max_length=150,
         unique=True,
         help_text=_(
@@ -42,8 +42,7 @@ class User(AbstractUser):
         verbose_name='Подписан ли текущий пользователь на этого'
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    # USERNAME_FIELD = 'email'
 
     class Meta:
         verbose_name = 'Пользователь'
