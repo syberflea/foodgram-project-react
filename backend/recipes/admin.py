@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Favorite, Ingredient, IngredientInRecipe, Recipe, ShopingCart, Tag,
 )
+from import_export.admin import ImportExportModelAdmin
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -23,11 +24,8 @@ class TagAdmin(admin.ModelAdmin):
     )
 
 
-class IngredientAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'measurement_unit',
-    )
+class IngredientAdmin(ImportExportModelAdmin):
+    pass
 
 
 class IngredientInRecipeAdmin(admin.ModelAdmin):
