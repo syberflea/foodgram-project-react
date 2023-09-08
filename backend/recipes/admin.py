@@ -7,17 +7,11 @@ from .models import (
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
-        'author',
-        'is_favorited',
-        'is_in_shopping_cart',
         'name',
-        'image',
-        'text',
-        'cooking_time',
+        'author',
     )
     search_fields = ('name', 'author')
-    list_filter = ('name',)
+    list_filter = ('author', 'name', 'tags')
     empty_value_display = '-пусто-'
 
 
