@@ -4,12 +4,10 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Follow, User
 
 
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'username')
     list_filter = ('email', 'username')
-
-
-admin.site.register(User, CustomUserAdmin)
 
 
 @admin.register(Follow)

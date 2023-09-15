@@ -42,6 +42,9 @@ class User(AbstractUser):
         verbose_name='Подписан ли текущий пользователь на этого'
     )
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
@@ -75,3 +78,6 @@ class Follow(models.Model):
                 name='unique_following'
             )
         ]
+
+    def __str__(self):
+        return f"{self.user} подписан на {self.following}"
