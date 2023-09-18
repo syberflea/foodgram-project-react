@@ -1,12 +1,38 @@
 import base64
-
-from django.contrib.auth import get_user_model
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.core.files.base import ContentFile
 from djoser.serializers import UserSerializer
 from recipes.models import Favorite, Ingredient, Recipe, Tag
 from rest_framework import serializers
+from users.models import User, Follow
 
-User = get_user_model()
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password'
+        )
+
+
+class CustomUserSerializer(UserSerializer):
+    is_subscribed = serializers.ReadOnlyField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
+        )
 
 
 class Base64ImageField(serializers.ImageField):
@@ -34,18 +60,15 @@ class TagSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
-        model: Ingredient
+        model = Ingredient
         fields = '__all__'
-
-
-class CustomUserSerializer(UserSerializer):
-    class Meta:
-        model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=False, allow_null=True)
+    tags = TagSerializer(many=True)
+    author = CustomUserSerializer(read_only=True)
+    ingredients = IngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
