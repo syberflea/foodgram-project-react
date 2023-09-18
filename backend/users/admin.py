@@ -12,6 +12,6 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'user', 'following')
-    search_fields = ('user', 'following')
-    list_filter = ('user', 'following')
+    list_display = ('pk', 'user', 'author')
+    search_fields = ('user', 'author')
+    list_filter = ('user', 'author')

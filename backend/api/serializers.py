@@ -94,11 +94,11 @@ class YaRecipeSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='following.id')
-    email = serializers.ReadOnlyField(source='following.email')
-    username = serializers.ReadOnlyField(source='following.username')
-    first_name = serializers.ReadOnlyField(source='following.first_name')
-    last_name = serializers.ReadOnlyField(source='following.last_name')
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -118,16 +118,16 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         return Follow.objects.filter(
-            user=obj.user, following=obj.following
+            user=obj.user, author=obj.author
         ).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(following=obj.following)
+        queryset = Recipe.objects.filter(author=obj.author)
         if limit:
             queryset = queryset[:int(limit)]
         return YaRecipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
-        return Recipe.objects.filter(following=obj.following).count()
+        return Recipe.objects.filter(author=obj.author).count()
