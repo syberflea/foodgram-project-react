@@ -1,38 +1,10 @@
 import base64
-from djoser.serializers import UserCreateSerializer, UserSerializer
+
 from django.core.files.base import ContentFile
-from djoser.serializers import UserSerializer
 from recipes.models import Favorite, Ingredient, Recipe, Tag
 from rest_framework import serializers
-from users.models import User, Follow
-
-
-class CustomUserCreateSerializer(UserCreateSerializer):
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'password'
-        )
-
-
-class CustomUserSerializer(UserSerializer):
-    is_subscribed = serializers.ReadOnlyField()
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed'
-        )
+from users.models import Follow
+from users.serializers import CustomUserSerializer
 
 
 class Base64ImageField(serializers.ImageField):
@@ -117,17 +89,18 @@ class FollowSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        return Follow.objects.filter(
-            user=obj.user, author=obj.author
-        ).exists()
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return user.follower.filter(author=obj.id).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
+        queryset = obj.author.recipes.all()
         if limit:
             queryset = queryset[:int(limit)]
         return YaRecipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj.author).count()
+        return obj.author.recipes.all().count()
