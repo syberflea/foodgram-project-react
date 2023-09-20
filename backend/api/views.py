@@ -1,24 +1,34 @@
 from django.db.models import Sum
 from django.http import HttpResponse
 from recipes.models import (
-    Favorite, Ingredient, IngredientInRecipe, Recipe, Tag, ShopingCart
+    Favorite, Ingredient, IngredientInRecipe, Recipe, ShopingCart, Tag,
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .pagination import CustomPagination
-from .permissions import AuthorOrReadOnlyPermission
+from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
     FavoriteSerializer, IngredientSerializer, RecipeSerializer, TagSerializer,
 )
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(ReadOnlyModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class IngredientViewSet(ReadOnlyModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    # filter_backends = (IngredientSearchFilter,)
+    # search_fields = ('^name',)
 
 
 class FavoriteViewSet(viewsets.ModelViewSet):
@@ -26,16 +36,11 @@ class FavoriteViewSet(viewsets.ModelViewSet):
     serializer_class = FavoriteSerializer
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-
-
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = CustomPagination
-    permission_classes = (AuthorOrReadOnlyPermission, )
+    permission_classes = (IsAuthorOrReadOnly, )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -68,7 +73,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).order_by('ingredient__name').annotate(total=Sum('amount'))
-        result = 'Мой список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
+        result = 'Список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
         result += '\n'.join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
             f'{ingredient["ingredient__measurement_unit"]}'
