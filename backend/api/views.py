@@ -1,33 +1,35 @@
 from django.db.models import Sum
 from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (
     Favorite, Ingredient, IngredientInRecipe, Recipe, ShopingCart, Tag,
 )
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from .filters import IngredientSearchFilter
 from .pagination import CustomPagination
-from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     FavoriteSerializer, IngredientSerializer, RecipeSerializer, TagSerializer,
 )
 
 
 class TagViewSet(ReadOnlyModelViewSet):
-    permission_classes = (IsAdminOrReadOnly,)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
-    permission_classes = (IsAdminOrReadOnly,)
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    # filter_backends = (IngredientSearchFilter,)
+    pagination_class = None
+    filter_backends = (IngredientSearchFilter,)
     # search_fields = ('^name',)
 
 
@@ -41,6 +43,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = CustomPagination
     permission_classes = (IsAuthorOrReadOnly, )
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
