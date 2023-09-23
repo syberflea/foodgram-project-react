@@ -1,9 +1,7 @@
-from csv import DictReader
+import json
 
 from django.core.management import BaseCommand
 from recipes.models import Ingredient
-
-ALREADY_LOADED_ERROR_MESSAGE = 'В базе уже есть данные.'
 
 
 class Command(BaseCommand):
@@ -11,20 +9,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         if Ingredient.objects.exists():
-            print(ALREADY_LOADED_ERROR_MESSAGE)
+            print('В базе уже есть ингредиент.')
             return
         try:
             with open(
-                './data/ingredients.csv',
+                './data/ingredients.json',
                 'r',
                 encoding='utf-8'
             ) as file:
-                reader = DictReader(file)
-                Ingredient.objects.bulk_create(
-                    Ingredient(**data) for data in reader)
-        except ValueError:
-            print('Неопределенное значение.')
-        except Exception:
-            print('Что-то пошло не так!')
+                jsondata = json.load(file)
+                for line in jsondata:
+                    if not Ingredient.objects.filter(
+                       name=line['name'],
+                       measurement_unit=line['measurement_unit']).exists():
+                        Ingredient.objects.create(
+                            name=line['name'],
+                            measurement_unit=line['measurement_unit']
+                        )
+        except ValueError as error:
+            print(f"A {type(error).__name__} has occurred.")
         else:
-            print('Загрузка окончена.')
+            print('Загрузка ингредиентов завершена')
