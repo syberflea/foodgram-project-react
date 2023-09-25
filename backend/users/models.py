@@ -37,10 +37,6 @@ class User(AbstractUser):
         blank=True,
         verbose_name='Фамилия'
     )
-    is_subscribed = models.BooleanField(
-        default=False,
-        verbose_name='Подписан ли текущий пользователь на этого'
-    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
