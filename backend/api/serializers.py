@@ -45,12 +45,11 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(required=False, allow_null=True)
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
-    ingredients = IngredientInRecipeSerializer(many=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+    ingredients = IngredientInRecipeSerializer(many=True)
 
     class Meta:
         model = Recipe
@@ -78,6 +77,31 @@ class RecipeSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return user.shoppingcarts.filter(recipe=obj).exists()
+
+
+class RecipeCreateSerializer(serializers.ModelSerializer):
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
+    image = Base64ImageField(required=False, allow_null=True)
+    ingredients = IngredientInRecipeSerializer(many=True)
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
+        read_only_fields = ('author',)
 
     def validate_ingredients(self, value):
         if not value:
