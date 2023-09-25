@@ -67,7 +67,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta(UserSerializer.Meta):
         fields = (
-            'id',
+            'pk',
             'email',
             'username',
             'first_name',
