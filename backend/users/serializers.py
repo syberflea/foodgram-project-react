@@ -10,13 +10,13 @@ class YaRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'pk',
+            'id',
             'name',
             'image',
             'cooking_time'
         )
         read_only_fields = (
-            'pk',
+            'id',
             'name',
             'image',
             'cooking_time'
@@ -28,6 +28,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
         fields = (
+            'id',
             'email',
             'username',
             'first_name',
@@ -45,7 +46,7 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = (
-            'pk',
+            'id',
             'email',
             'username',
             'first_name',
@@ -67,7 +68,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta(UserSerializer.Meta):
         fields = (
-            'pk',
+            'id',
             'email',
             'username',
             'first_name',

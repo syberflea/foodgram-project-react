@@ -62,7 +62,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='recipies',
+        related_name='recipes',
         verbose_name='Автор'
     )
     ingredients = models.ManyToManyField(
@@ -97,6 +97,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        ordering = ['-id']
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -109,13 +110,12 @@ class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='elements',
+        related_name='ingredientrecipes',
         verbose_name='Рецепт'
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='elements',
         verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
