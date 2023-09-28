@@ -31,7 +31,8 @@ class IngredientAdmin(ImportExportModelAdmin):
 
 
 class IngredientInRecipeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('recipe', 'ingredient', 'amount')
+    list_filter = ('recipe',)
 
 
 class FavoriteRecipeAdmin(admin.ModelAdmin):

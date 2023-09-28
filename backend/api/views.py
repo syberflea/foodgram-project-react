@@ -13,10 +13,10 @@ from users.models import User
 
 from .filters import IngredientSearchFilter, RecipeFilter
 from .pagination import CustomPagination
-from .permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
-    FavoriteSerializer, IngredientSerializer, RecipeCreateSerializer,
-    RecipeSerializer, ShoppingCartSerializer, TagSerializer,
+    FavoriteSerializer, IngredientSerializer, RecipeSerializer,
+    ShoppingCartSerializer, TagSerializer,
 )
 
 
@@ -45,11 +45,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_serializer_class(self):
-        if self.request.method in ['POST', 'PUT', 'PATCH']:
-            return RecipeCreateSerializer
-        return RecipeSerializer
-
     @action(
         methods=['get'],
         detail=False,
@@ -72,7 +67,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .order_by('ingredient__name')
             .annotate(total=Sum('amount'))
         )
-        print(ingredients)
         result = 'Список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
         result += '\n'.join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
