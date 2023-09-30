@@ -80,7 +80,6 @@ scp -i path_to_SSH/SSH_name docker-compose.production.yml username@server_ip:/ho
 ```
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
 ```
 
 6. На сервере в редакторе nano откройте конфиг Nginx:
