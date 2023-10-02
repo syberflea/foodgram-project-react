@@ -18,6 +18,7 @@ from .serializers import (
     FavoriteSerializer, IngredientSerializer, RecipeSerializer,
     ShoppingCartSerializer, TagSerializer,
 )
+from .utils import filename, shoping_list_header
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -51,7 +52,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        filename = "shoping_list.txt"
         user = request.user
         if not user.shopingcarts.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -67,15 +67,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .order_by('ingredient__name')
             .annotate(total=Sum('amount'))
         )
-        result = 'Список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
-        result += '\n'.join([
+        shoping_list_content = "".join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
             f'{ingredient["ingredient__measurement_unit"]}'
             for ingredient in ingredients
         ])
-        response = HttpResponse(result, content_type='text/plain')
+        response = HttpResponse(
+            shoping_list_header + shoping_list_content,
+            content_type='text/plain'
+        )
         response['Content-Disposition'] = f'attachment; filename={filename}'
-
         return response
 
     @action(

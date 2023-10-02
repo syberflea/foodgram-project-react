@@ -23,16 +23,8 @@
 5. Создайте суперюзера: `python manage.py createsuperuser`.
 
 ### Переменные окружения
-В корневом каталоге проекта создайте файл .env:
-```
-POSTGRES_DB=db_postgress
-POSTGRES_USER=user_postgress
-POSTGRES_PASSWORD=user_password
-DB_NAME=foodgram
-SECRET_KEY = '<ваш_ключ>'
-DEBUG=False
-ALLOWED_HOSTS='ваш домен'
-```
+В корневом каталоге проекта создайте файл .env и заполните его. В качестве образца используйте .env.example
+
 
 ### Создание Docker-образов
 1. Замените username на ваш логин на DockerHub:

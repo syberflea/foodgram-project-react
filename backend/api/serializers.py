@@ -1,23 +1,12 @@
-import base64
 
-from django.core.files.base import ContentFile
+from django.db import transaction
 from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (
     Favorite, Ingredient, IngredientInRecipe, Recipe, ShopingCart, Tag,
 )
 from rest_framework import serializers, status
 from users.serializers import CustomUserSerializer
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-
-            data = ContentFile(base64.b64decode(imgstr), name=f'temp.{ext}')
-
-        return super().to_internal_value(data)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -46,7 +35,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(required=False, allow_null=True)
+    image = Base64ImageField()
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
@@ -123,39 +112,32 @@ class RecipeSerializer(serializers.ModelSerializer):
         data['tags'] = tags
         return data
 
-    def create(self, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
-        tags = self.initial_data.get('tags')
-        recipe.tags.set(tags)
+    def _add_elements_to_recipe(self, ingredients, recipe):
         for ingredient in ingredients:
             IngredientInRecipe.objects.create(
                 recipe=recipe,
                 ingredient_id=ingredient.get('id'),
                 amount=ingredient['amount'],
             )
+
+    @transaction.atomic
+    def create(self, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        tags = self.initial_data.get('tags')
+        recipe.tags.set(tags)
+        self._add_elements_to_recipe(ingredients, recipe)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
-        instance.image = validated_data.get('image', instance.image)
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time
-        )
         instance.tags.clear()
         tags = self.initial_data.get('tags')
         instance.tags.set(tags)
         IngredientInRecipe.objects.filter(recipe=instance).all().delete()
         ingredients = validated_data.pop('ingredients')
-        for ingredient in ingredients:
-            IngredientInRecipe.objects.create(
-                recipe=instance,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient['amount'],
-            )
-        instance.save()
-        return instance
+        self._add_elements_to_recipe(ingredients, instance)
+        return super().update(instance, validated_data)
 
 
 class FavoriteSerializer(RecipeSerializer):
