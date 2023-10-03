@@ -135,3 +135,5 @@ backend/db.sqlite3.bak
 backend/clear_db.sh
 
 .vscode/
+.vscode/settings.json
+.vscode/settings.json
