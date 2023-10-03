@@ -22,7 +22,7 @@ class Tag(models.Model):
         help_text=_('example: #E26C2D')
     )
     slug = models.SlugField(
-        '''Уникальный слаг''',
+        'Уникальный слаг',
         max_length=200
     )
 
@@ -37,11 +37,11 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     '''Список ингредиентов с возможностью поиска по имени.'''
     name = models.CharField(
-        '''Ингридиент''',
+        'Ингридиент',
         max_length=200
     )
     measurement_unit = models.CharField(
-        '''Единица измерения''',
+        'Единица измерения',
         max_length=200
     )
 
@@ -199,4 +199,4 @@ class ShopingCart(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.user.name} buys {self.recipe.name}"
+        return f"{self.user} has {self.recipe}"
