@@ -199,4 +199,4 @@ class ShopingCart(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.user.name} buys {self.recipe.name}"
+        return f"{self.user} has {self.recipe}"

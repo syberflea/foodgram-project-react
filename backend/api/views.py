@@ -18,7 +18,9 @@ from .serializers import (
     FavoriteSerializer, IngredientSerializer, RecipeSerializer,
     ShoppingCartSerializer, TagSerializer,
 )
-from .utils import filename, shoping_list_header
+
+from .utils import FILENAME, HEADER
+
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -67,17 +69,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .order_by('ingredient__name')
             .annotate(total=Sum('amount'))
         )
-        shoping_list_content = "\n".join([
+
+        shoping_list_content = HEADER
+        shoping_list_content += '\n'.join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
             f'{ingredient["ingredient__measurement_unit"]}'
             for ingredient in ingredients
         ])
-        shoping_list = shoping_list_header + shoping_list_content
+
         response = HttpResponse(
-            shoping_list,
+            shoping_list_content,
             content_type='text/plain'
         )
-        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response['Content-Disposition'] = f'attachment; filename={FILENAME}'
+
+
         return response
 
     @action(
