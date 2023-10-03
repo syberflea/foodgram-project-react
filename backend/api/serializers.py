@@ -34,7 +34,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(required=False, allow_null=True)
+    image = Base64ImageField()
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
@@ -158,11 +158,13 @@ class FavoriteSerializer(RecipeSerializer):
 
 
 class ShoppingCartSerializer(RecipeSerializer):
-    name = serializers.ReadOnlyField()
-    cooking_time = serializers.ReadOnlyField()
+    user = CustomUserSerializer()
 
-    class Meta(RecipeSerializer.Meta):
-        fields = ('id', 'name', 'image', 'cooking_time')
+    recipe = RecipeSerializer()
+
+    class Meta:
+        model = ShopingCart
+        fields = ('user', 'recipe')
 
     def validate(self, data):
         recipe = self.instance
