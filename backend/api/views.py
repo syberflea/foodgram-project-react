@@ -67,13 +67,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .order_by('ingredient__name')
             .annotate(total=Sum('amount'))
         )
-        shoping_list_content = "".join([
+        shoping_list_content = "\n".join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}/'
             f'{ingredient["ingredient__measurement_unit"]}'
             for ingredient in ingredients
         ])
+        shoping_list = shoping_list_header + shoping_list_content
         response = HttpResponse(
-            shoping_list_header + shoping_list_content,
+            shoping_list,
             content_type='text/plain'
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
