@@ -6,6 +6,8 @@ from recipes.models import (
 )
 from rest_framework import serializers, status
 from users.serializers import CustomUserSerializer
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -158,20 +160,28 @@ class FavoriteSerializer(RecipeSerializer):
 
 
 class ShoppingCartSerializer(RecipeSerializer):
-    user = CustomUserSerializer()
-
-    recipe = RecipeSerializer()
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    recipe = serializers.PrimaryKeyRelatedField(
+        queryset=Recipe.objects.all()
+    )
 
     class Meta:
         model = ShopingCart
         fields = ('user', 'recipe')
 
-    def validate(self, data):
-        recipe = self.instance
-        user = self.context.get('request').user
-        if ShopingCart.objects.filter(recipe=recipe, user=user).exists():
+    def validate(self, obj):
+        user = self.context['request'].user
+        recipe = obj['recipe']
+        cart = user.shopingcarts.filter(recipe=recipe).exists()
+
+        if self.context.get('request').method == 'POST' and cart:
             raise serializers.ValidationError(
-                detail='Рецепт уже добавлен в корзину',
-                code=status.HTTP_400_BAD_REQUEST,
+                'Этот рецепт уже добавлен в корзину'
             )
-        return data
+        if self.context.get('request').method == 'DELETE' and not cart:
+            raise serializers.ValidationError(
+                'Этот рецепт отсутствует в корзине'
+            )
+        return obj

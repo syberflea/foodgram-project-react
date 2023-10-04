@@ -87,11 +87,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def _process(self, request, serializer, model):
         user = get_object_or_404(User, username=request.user)
         recipe = get_object_or_404(Recipe, pk=self.kwargs.get('pk'))
+        data = {
+            'user': user,
+            'recipe': recipe,
+        }
         if request.method == 'POST':
             serializer = serializer(
-                recipe, data=request.data, context={'request': request}
+                data=data, context={'request': request}
             )
+            print("data: ", data)
             serializer.is_valid(raise_exception=True)
+            print(serializer.data)
             model.objects.create(user=user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
