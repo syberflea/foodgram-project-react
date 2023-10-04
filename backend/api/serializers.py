@@ -6,8 +6,6 @@ from recipes.models import (
 )
 from rest_framework import serializers, status
 from users.serializers import CustomUserSerializer
-from django.contrib.auth import get_user_model
-User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -142,10 +140,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(RecipeSerializer):
-    name = serializers.ReadOnlyField()
-    cooking_time = serializers.ReadOnlyField()
 
     class Meta(RecipeSerializer.Meta):
+        model = Favorite
         fields = ('id', 'name', 'image', 'cooking_time')
 
     def validate(self, data):
@@ -160,12 +157,6 @@ class FavoriteSerializer(RecipeSerializer):
 
 
 class ShoppingCartSerializer(RecipeSerializer):
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all()
-    )
-    recipe = serializers.PrimaryKeyRelatedField(
-        queryset=Recipe.objects.all()
-    )
 
     class Meta:
         model = ShopingCart
