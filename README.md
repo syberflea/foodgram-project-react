@@ -1,7 +1,7 @@
 # Foodgram — сайт для обмена рецептами. 
 
 ## Описание проекта
-Наш сайт ["Рецепты для всех"](https://syberflea.ddns.net/) ждет вас!
+Наш сайт https://syberflea.ddns.net/ ждет вас!
 Пользователи могут регистрироваться, создавать любимые рецепты, загружать их фотографии, давать краткое описание, смотреть фото рецептов, которые опубликовали други пользователи.
 Проект создан в рамках учебного курса "Python-разработчик" на платформе Яндекс.Практикум. 
 Это дальнейшее развитие проекта в терминах (образах) контейниризации на основе Docker.
@@ -60,7 +60,7 @@ sudo sh ./get-docker.sh
 sudo apt-get install docker-compose-plugin
 ```
 
-В kittygram скопируйте файлы docker-compose.production.yml и .env:
+Скопируйте файл docker-compose.production.yml:
 ```
 scp -i path_to_SSH/SSH_name docker-compose.production.yml username@server_ip:/home/username/foodgram/docker-compose.production.yml
 ```
