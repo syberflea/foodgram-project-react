@@ -137,3 +137,4 @@ backend/clear_db.sh
 .vscode/
 .vscode/settings.json
 .vscode/settings.json
+backend/media/
